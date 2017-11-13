@@ -102,6 +102,31 @@ module.exports = function(grunt) {
                     var mh = d.getMonth() + 1;
                     var dy = d.getDate();
                     var yr = d.getFullYear();
+                    if (dy < 10) {
+                        dy = '0' + dy;
+                    }
+                    if (mh < 10) {
+                        mh = '0' + mh;
+                    }
+                    return dest + "/" + yr + "_" + mh + "_" + dy + "_" + src;
+                }
+            },
+            archive_img: {
+                expand: true,
+                cwd: '<%= paths.src %>/images',
+                src: ['**'],
+                dest: '<%= paths.arch %>/img',
+                rename: function(dest, src) {
+                    var d = new Date();
+                    var mh = d.getMonth() + 1;
+                    var dy = d.getDate();
+                    var yr = d.getFullYear();
+                    if (dy < 10) {
+                        dy = '0' + dy;
+                    }
+                    if (mh < 10) {
+                        mh = '0' + mh;
+                    }
                     return dest + "/" + yr + "_" + mh + "_" + dy + "_" + src;
                 }
             },
@@ -112,18 +137,18 @@ module.exports = function(grunt) {
                 dest: '<%= paths.src %>/',
                 rename: function(dest, src) {
                     var str = src;
-                    var fin = str.replace(/(.*)\_(.*)\_(.*)\_/, "")
+                    var fin = str.replace(/(.*?)\_(.*?)\_(.*?)\_/, "");
                     return dest + fin;
                 }
             },
             return_img: {
                 expand: true,
-                cwd: '<%= paths.img %>/',
+                cwd: '<%= paths.arch %>/img',
                 src: param + '**',
                 dest: '<%= paths.src %>/images/',
                 rename: function(dest, src) {
                     var str = src;
-                    var fin = str.replace(/\.(.*)\./, ".")
+                    var fin = str.replace(/(.*?)\_(.*?)\_(.*?)\_/, "");
                     return dest + fin;
                 }
             },
