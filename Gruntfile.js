@@ -1,4 +1,4 @@
-module.exports = function (grunt) {
+module.exports = function(grunt) {
     var path = require('path');
     var param = grunt.option('target');
     require('load-grunt-tasks')(grunt);
@@ -19,6 +19,21 @@ module.exports = function (grunt) {
             email: '*.html',
             //images to deploy
             img: 'images'
+        },
+        insert: {
+            options: {},
+            html: {
+                src: 'libraries/html/lr_head_snippet.html',
+                dest: 'src/*.html',
+                match: '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">'
+            },
+            css: {
+                src: "libraries/css/lr_responsive_dem.css",
+                expand: true,
+                cwd: '<%= paths.src %>',
+                dest: ['<%= paths.email %>'],
+                match: '/* lr_responsive_dem.css */'
+            },
         },
         connect: {
             app: {
@@ -67,7 +82,7 @@ module.exports = function (grunt) {
                     cwd: '<%= paths.tmp %>/output/',
                     src: ['<%= paths.email %>'],
                     dest: '<%= paths.dist %>',
-                    rename: function (dest, src) {
+                    rename: function(dest, src) {
                         var d = new Date();
                         var mh = d.getMonth() + 1;
                         var dy = d.getDate();
@@ -82,7 +97,7 @@ module.exports = function (grunt) {
                 cwd: '<%= paths.src %>',
                 src: ['<%= paths.email %>'],
                 dest: '<%= paths.arch %>/',
-                rename: function (dest, src) {
+                rename: function(dest, src) {
                     var d = new Date();
                     var mh = d.getMonth() + 1;
                     var dy = d.getDate();
@@ -95,7 +110,7 @@ module.exports = function (grunt) {
                 cwd: '<%= paths.arch %>/',
                 src: '*' + param + '.html',
                 dest: '<%= paths.src %>/',
-                rename: function (dest, src) {
+                rename: function(dest, src) {
                     var str = src;
                     var fin = str.replace(/(.*)\_(.*)\_(.*)\_/, "")
                     return dest + fin;
@@ -106,7 +121,7 @@ module.exports = function (grunt) {
                 cwd: '<%= paths.img %>/',
                 src: param + '**',
                 dest: '<%= paths.src %>/images/',
-                rename: function (dest, src) {
+                rename: function(dest, src) {
                     var str = src;
                     var fin = str.replace(/\.(.*)\./, ".")
                     return dest + fin;
@@ -276,12 +291,16 @@ module.exports = function (grunt) {
         }
 
     });
-    grunt.registerTask('default', 'default task description', function () {
-        console.log(param);
+    grunt.registerTask('default', 'default task description', function() {
+        console.log(filename);
     });
     grunt.registerTask('serve', [
         'connect:app',
         'watch:app'
+    ]);
+    grunt.registerTask('start', [
+        'insert:html',
+        'insert:css'
     ]);
     grunt.registerTask('demo', [
         'ftp-deploy:demo',
