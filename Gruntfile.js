@@ -340,6 +340,7 @@ module.exports = function(grunt) {
         'clean:tmp',
         'clean:dist',
         'copy:archive',
+        'copy:archive_img',
         'copy:tmp',
         'copy:imagesTmp',
         'filerev:tmp',
