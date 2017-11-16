@@ -20,6 +20,7 @@ module.exports = function(grunt) {
             //images to deploy
             img: 'images'
         },
+
         insert: {
             options: {},
             html: {
@@ -34,6 +35,15 @@ module.exports = function(grunt) {
                 dest: ['<%= paths.email %>'],
                 match: '/* lr_responsive_dem.css */'
             },
+        },
+        compass: { // Task 
+            dist: { // Target 
+                options: { // Target options 
+                    sassDir: '<%= paths.src %>/scss',
+                    cssDir: '<%= paths.src %>/css',
+                    environment: 'development'
+                }
+            }
         },
         connect: {
             app: {
@@ -54,6 +64,13 @@ module.exports = function(grunt) {
                 files: ['<%= paths.src %>/*'],
                 options: {
                     livereload: true
+                }
+            },
+            css: {
+                files: ['<%= paths.src %>/scss/*.scss'],
+                tasks: ['compass'],
+                options: {
+                    livereload: true,
                 }
             }
         },
@@ -91,6 +108,10 @@ module.exports = function(grunt) {
                     }
                 }]
 
+            },
+            sass: {
+                src: 'libraries/scss/lr_responsive_dem.scss',
+                dest: 'src/scss/responsive.scss',
             },
             archive: {
                 expand: true,
@@ -321,11 +342,12 @@ module.exports = function(grunt) {
     });
     grunt.registerTask('serve', [
         'connect:app',
-        'watch:app'
+        'watch'
     ]);
     grunt.registerTask('start', [
-        'insert:html',
-        'insert:css'
+        'copy:sass',
+        'connect:app',
+        'watch'
     ]);
     grunt.registerTask('demo', [
         'ftp-deploy:demo',
