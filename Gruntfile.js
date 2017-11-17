@@ -11,6 +11,8 @@ module.exports = function(grunt) {
             dist: 'dist',
             //sources
             src: 'src',
+            // demo to ftp
+            demo: 'demo',
             //temporary files
             tmp: 'tmp',
             //security vault
@@ -37,7 +39,7 @@ module.exports = function(grunt) {
             },
         },
         compass: { // Task 
-            dist: { // Target 
+            src: { // Target 
                 options: { // Target options 
                     sassDir: '<%= paths.src %>/scss',
                     cssDir: '<%= paths.src %>/css',
@@ -207,16 +209,31 @@ module.exports = function(grunt) {
             }
         },
         premailer: {
-            tmp: {
+            demo: {
                 options: {
-                    queryString: 'utm_source=infodent',
                     verbose: true,
                     removeClasses: true,
 
                 },
-                files: {
-                    '<%= paths.tmp %>/output/<%= paths.filename %>.html': ['<%= paths.tmp %>/*.html']
-                }
+                files: [{
+                    expand: true,
+                    cwd: '<%= paths.src %>/',
+                    src: ['*.html'],
+                    dest: '<%= paths.src %>/demo/',
+                    rename: function(dest, src) {
+                        var d = new Date();
+                        var mh = d.getMonth() + 1;
+                        var dy = d.getDate();
+                        var yr = d.getFullYear();
+                        if (dy < 10) {
+                            dy = '0' + dy;
+                        }
+                        if (mh < 10) {
+                            mh = '0' + mh;
+                        }
+                        return dest + "/" + yr + "_" + mh + "_" + dy + "_" + src;
+                    }
+                }]
             },
             dist: {
                 options: {
@@ -256,6 +273,7 @@ module.exports = function(grunt) {
             tmp: ["<%= paths.tmp %>/**"],
             dist: ["<%= paths.dist %>/**"],
             src: ["<%= paths.src %>/*"],
+            demo: ["<%= paths.src %>/demo/**"]
         },
         filerev: {
             options: {
@@ -294,8 +312,17 @@ module.exports = function(grunt) {
                     port: 21,
                     authKey: 'key1'
                 },
-                src: '<%= paths.src %>',
+                src: '<%= paths.src %>/demo/',
                 dest: '/web/newsletter/000-grunt/demo'
+            },
+            demo_img: {
+                auth: {
+                    host: 'gemini3.bec.it',
+                    port: 21,
+                    authKey: 'key1'
+                },
+                src: '<%= paths.src %>/images',
+                dest: '/web/newsletter/000-grunt/demo/images/'
             }
         },
         usemin: {
@@ -346,11 +373,15 @@ module.exports = function(grunt) {
     ]);
     grunt.registerTask('start', [
         'copy:sass',
+        'compass:src',
         'connect:app',
         'watch'
     ]);
     grunt.registerTask('demo', [
+        'clean:demo',
+        'premailer:demo',
         'ftp-deploy:demo',
+        'ftp-deploy:demo_img',
     ]);
     grunt.registerTask('return', [
         'clean:src',
