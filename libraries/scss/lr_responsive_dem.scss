@@ -2,41 +2,34 @@
 
 $font-stack: Helvetica,
 sans-serif;
-$bg-color-1: #333;
-$bg-color-2:#000;
-$color-1:#000;
+$color-font-table:#000000;
+$bg-table:#FFFFFF;
+$bg-color-1: #333333;
+$bg-color-2:#000000;
+$color-1:#000000;
 $color-2:#f9f9f9;
+$color-href:#42d342;
+
+/* Elements */
+
 img {
     display: block;
     border: 0;
 }
 
 table {
-    margin: 0 auto;
-}
-
-
-/* Elements */
-
-@mixin border-radius($radius) {
-    -webkit-border-radius: $radius;
-    -moz-border-radius: $radius;
-    -ms-border-radius: $radius;
-    border-radius: $radius;
-}
-
-.box {
-    @include border-radius(10px);
-}
-
-
-/* Colors */
-
-table {
-    background-color: $bg-color-1;
-    color: $color-1;
+    background-color: $bg-table!important;
+    color: $color-font-table!important;
     font-family: $font-stack;
 }
+
+a {
+    text-decoration: none;
+    color: $color-href;
+}
+
+
+/* Typography */
 
 .size-1 {
     font-size: 48px;
@@ -78,18 +71,83 @@ table {
     font-weight: 900;
 }
 
-a {
-    text-decoration: none;
-    color: #000;
-}
-
 a.btn {
     text-align: center;
-    display: block;
+    display: inline-block;
     font-weight: 700;
     font-size: 24px;
     padding: 10px;
 }
+
+
+/* Mixins */
+
+@mixin border-radius($radius) {
+    -webkit-border-radius: $radius;
+    -moz-border-radius: $radius;
+    -ms-border-radius: $radius;
+    border-radius: $radius;
+}
+
+.box {
+    @include border-radius(10px);
+}
+
+@mixin push--auto {
+    margin: {
+        left: auto;
+        right: auto;
+    }
+}
+
+@mixin input-placeholder {
+    &.placeholder {
+        @content;
+    }
+    &:-moz-placeholder {
+        @content;
+    }
+    &::-moz-placeholder {
+        @content;
+    }
+    &:-ms-input-placeholder {
+        @content;
+    }
+    &::-webkit-input-placeholder {
+        @content;
+    }
+}
+
+@mixin font-smoothing($value: on) {
+    @if $value==on {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+    @else {
+        -webkit-font-smoothing: subpixel-antialiased;
+        -moz-osx-font-smoothing: auto;
+    }
+}
+
+@mixin linearGradient($top, $bottom) {
+    background: $top;
+    /* Old browsers */
+    background: -moz-linear-gradient(top, $top 0%, $bottom 100%);
+    /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, $top), color-stop(100%, $bottom));
+    /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, $top 0%, $bottom 100%);
+    /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, $top 0%, $bottom 100%);
+    /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, $top 0%, $bottom 100%);
+    /* IE10+ */
+    background: linear-gradient(to bottom, $top 0%, $bottom 100%);
+    /* W3C */
+}
+
+
+/* Media Queries */
 
 @media only screen and (max-width: 480px) {
     table {

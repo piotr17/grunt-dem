@@ -22,21 +22,15 @@ module.exports = function(grunt) {
             //images to deploy
             img: 'images'
         },
-
-        insert: {
-            options: {},
+        replace: {
             html: {
-                src: 'libraries/html/lr_head_snippet.html',
-                dest: 'src/*.html',
-                match: '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">'
-            },
-            css: {
-                src: "libraries/css/lr_responsive_dem.css",
-                expand: true,
-                cwd: '<%= paths.src %>',
-                dest: ['<%= paths.email %>'],
-                match: '/* lr_responsive_dem.css */'
-            },
+                src: ['<%= paths.src %>/*.html'],
+                overwrite: true, // overwrite matched source files 
+                replacements: [{
+                    from: '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
+                    to: '<meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta http-equiv="X-UA-Compatible" content="ie=edge"><link rel="stylesheet" href="css/responsive.css">'
+                }]
+            }
         },
         compass: { // Task 
             src: { // Target 
@@ -75,6 +69,9 @@ module.exports = function(grunt) {
                     livereload: true,
                 }
             }
+        },
+        concurrent: {
+            serve: ['connect', 'watch']
         },
         htmlmin: {
             tmp: {
@@ -153,6 +150,25 @@ module.exports = function(grunt) {
                     return dest + "/" + yr + "_" + mh + "_" + dy + "_" + src;
                 }
             },
+            archive_css: {
+                expand: true,
+                cwd: '<%= paths.src %>/css',
+                src: ['**'],
+                dest: '<%= paths.arch %>/css',
+                rename: function(dest, src) {
+                    var d = new Date();
+                    var mh = d.getMonth() + 1;
+                    var dy = d.getDate();
+                    var yr = d.getFullYear();
+                    if (dy < 10) {
+                        dy = '0' + dy;
+                    }
+                    if (mh < 10) {
+                        mh = '0' + mh;
+                    }
+                    return dest + "/" + yr + "_" + mh + "_" + dy + "_" + src;
+                }
+            },
             return: {
                 expand: true,
                 cwd: '<%= paths.arch %>/',
@@ -175,11 +191,28 @@ module.exports = function(grunt) {
                     return dest + fin;
                 }
             },
+            return_css: {
+                expand: true,
+                cwd: '<%= paths.arch %>/css',
+                src: '**',
+                dest: '<%= paths.src %>/css/',
+                rename: function(dest, src) {
+                    var str = src;
+                    var fin = str.replace(/(.*?)\_(.*?)\_(.*?)\_/, "");
+                    return dest + fin;
+                }
+            },
             imagesTmp: {
                 expand: true,
                 cwd: '<%= paths.src %>/images',
                 src: ['**'],
                 dest: '<%= paths.tmp %>/images/'
+            },
+            imagesCss: {
+                expand: true,
+                cwd: '<%= paths.src %>/css',
+                src: ['**'],
+                dest: '<%= paths.tmp %>/css/'
             },
             imgDeploy: {
                 expand: true,
@@ -205,7 +238,7 @@ module.exports = function(grunt) {
                 /** @required  - puts results here with respect to relative paths  */
                 dest: '<%= paths.tmp %>/',
                 /** @required  - files to process */
-                src: ['index.html', '*.css', '{,*/}*.html', '{,**/}*.html']
+                src: ['index.html', '{,*/}*.html', '{,**/}*.html']
             }
         },
         premailer: {
@@ -330,42 +363,10 @@ module.exports = function(grunt) {
             options: {
                 assetsDirs: ['<%= paths.tmp %>', '<%= paths.tmp %>/images/**']
             }
-        },
-        screenshot: {
-            default_options: {
-                options: {
-                    path: '<%= paths.arch %>',
-                    files: [{
-                        type: 'local',
-                        path: '<%= paths.dist %>',
-                        port: 8090,
-                        src: '*.html',
-                        dest: '<%= paths.arch %>/screenshot',
-                        delay: 500
-                    }],
-                    viewport: ['640x960']
-                }
-            },
-
-        },
-        filenamesToJson: {
-            options: {
-                // true if full path should be included, default is false
-                fullPath: false,
-                // true if file extension should be included, default is false 
-                extensions: true
-            },
-            // any valid glob
-            //files: '<%= paths.arch %>/*.html',
-            files: 'http://test.bec.it/newsletter/000-grunt/*.html',
-
-            // path to write json to
-            destination: '<%= paths.arch %>/json/output.json'
         }
-
     });
     grunt.registerTask('default', 'default task description', function() {
-        console.log(filename);
+        console.log("Hello World!");
     });
     grunt.registerTask('serve', [
         'connect:app',
@@ -374,6 +375,7 @@ module.exports = function(grunt) {
     grunt.registerTask('start', [
         'copy:sass',
         'compass:src',
+        'replace:html',
         'connect:app',
         'watch'
     ]);
@@ -381,12 +383,13 @@ module.exports = function(grunt) {
         'clean:demo',
         'premailer:demo',
         'ftp-deploy:demo',
-        'ftp-deploy:demo_img',
+        'ftp-deploy:demo_img'
     ]);
     grunt.registerTask('return', [
         'clean:src',
         'copy:return',
-        'copy:return_img'
+        'copy:return_img',
+        'copy:return_css'
     ]);
     grunt.registerTask('build', [
         'useminPrepare',
@@ -394,12 +397,14 @@ module.exports = function(grunt) {
         'clean:dist',
         'copy:archive',
         'copy:archive_img',
+        'copy:archive_css',
         'copy:tmp',
         'copy:imagesTmp',
+        'copy:imagesCss',
         'filerev:tmp',
         'usemin',
-        'cdn:tmp',
         'premailer:dist',
+        'cdn:tmp',
         'htmlmin:tmp',
         'copy:dist',
         'copy:imgDeploy',
@@ -409,3 +414,13 @@ module.exports = function(grunt) {
         'clean:src'
     ]);
 };
+
+/* 
+MANUAL
+
+grunt start to bootstrap the email
+grunt serve to start the livereload server
+grunt demo to deploy a demo file via FTP
+grunt return -target=clientname to return an email from archive
+grunt build to create the final code, archive the email and clean src 
+*/
