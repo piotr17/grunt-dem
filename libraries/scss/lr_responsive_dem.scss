@@ -9,6 +9,7 @@ $bg-color-2:#000000;
 $color-1:#000000;
 $color-2:#f9f9f9;
 $color-href:#42d342;
+$table-font-default:16px;
 
 /* Elements */
 
@@ -21,6 +22,7 @@ table {
     background-color: $bg-table!important;
     color: $color-font-table!important;
     font-family: $font-stack;
+    font-size: $table-font-default;
 }
 
 a {
@@ -32,19 +34,31 @@ a {
 /* Typography */
 
 .size-1 {
-    font-size: 48px;
+    font-size: $table-font-default*3;
 }
 
 .size-2 {
-    font-size: 30px;
+    font-size: $table-font-default*2.5;
 }
 
 .size-3 {
-    font-size: 25px;
+    font-size: $table-font-default*2.0;
 }
 
 .size-4 {
-    font-size: 18px;
+    font-size: $table-font-default*1.5;
+}
+
+.size-5 {
+    font-size: $table-font-default*1.0;
+}
+
+.size-6 {
+    font-size: $table-font-default*0.7;
+}
+
+.size-7 {
+    font-size: $table-font-default*0.5;
 }
 
 .txt-center {
@@ -53,6 +67,10 @@ a {
 
 .txt-right {
     text-align: right
+}
+
+.txt-left {
+    text-align: left
 }
 
 .peso-l {
@@ -77,6 +95,10 @@ a.btn {
     font-weight: 700;
     font-size: 24px;
     padding: 10px;
+}
+
+sup {
+    font-size: 50%;
 }
 
 
