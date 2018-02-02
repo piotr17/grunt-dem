@@ -1,4 +1,88 @@
-/*codice base responsive newsletter :*/
+/*
+Base Email Marketing Sass Framework
+Author : Luca Ricci
+*/
+
+
+/* Mixins */
+
+@mixin border-radius($radius) {
+    -webkit-border-radius: $radius;
+    -moz-border-radius: $radius;
+    -ms-border-radius: $radius;
+    border-radius: $radius;
+}
+
+@mixin rotate($degrees) {
+    -webkit-transform: rotate($degrees);
+    -moz-transform: rotate($degrees);
+    -ms-transform: rotate($degrees);
+    -o-transform: rotate($degrees);
+    transform: rotate($degrees);
+    -ms-filter: "progid:DXImageTransform.Microsoft.Matrix(sizingMethod='auto expand', M11=#{cos($degrees)}, M12=#{-1*sin($degrees)}, M21=#{sin($degrees)}, M22=#{cos($degrees)})";
+    filter: progid:DXImageTransform.Microsoft.Matrix(sizingMethod='auto expand', M11=#{cos($degrees)}, M12=#{-1*sin($degrees)}, M21=#{sin($degrees)}, M22=#{cos($degrees)});
+}
+
+.box {
+    @include border-radius(10px);
+}
+
+@mixin push--auto {
+    margin: {
+        left: auto;
+        right: auto;
+    }
+}
+
+@mixin input-placeholder {
+    &.placeholder {
+        @content;
+    }
+    &:-moz-placeholder {
+        @content;
+    }
+    &::-moz-placeholder {
+        @content;
+    }
+    &:-ms-input-placeholder {
+        @content;
+    }
+    &::-webkit-input-placeholder {
+        @content;
+    }
+}
+
+@mixin font-smoothing($value: on) {
+    @if $value==on {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+    @else {
+        -webkit-font-smoothing: subpixel-antialiased;
+        -moz-osx-font-smoothing: auto;
+    }
+}
+
+@mixin linearGradient($top, $bottom) {
+    background: $top;
+    /* Old browsers */
+    background: -moz-linear-gradient(top, $top 0%, $bottom 100%);
+    /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, $top), color-stop(100%, $bottom));
+    /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, $top 0%, $bottom 100%);
+    /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, $top 0%, $bottom 100%);
+    /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, $top 0%, $bottom 100%);
+    /* IE10+ */
+    background: linear-gradient(to bottom, $top 0%, $bottom 100%);
+    /* W3C */
+}
+
+body {
+    @include font-smoothing(on)
+}
 
 $font-stack: Helvetica,
 sans-serif;
@@ -94,78 +178,11 @@ a.btn {
     display: inline-block;
     font-weight: 700;
     font-size: 24px;
-    padding: 10px;
+    padding: 1em
 }
 
 sup {
     font-size: 50%;
-}
-
-
-/* Mixins */
-
-@mixin border-radius($radius) {
-    -webkit-border-radius: $radius;
-    -moz-border-radius: $radius;
-    -ms-border-radius: $radius;
-    border-radius: $radius;
-}
-
-.box {
-    @include border-radius(10px);
-}
-
-@mixin push--auto {
-    margin: {
-        left: auto;
-        right: auto;
-    }
-}
-
-@mixin input-placeholder {
-    &.placeholder {
-        @content;
-    }
-    &:-moz-placeholder {
-        @content;
-    }
-    &::-moz-placeholder {
-        @content;
-    }
-    &:-ms-input-placeholder {
-        @content;
-    }
-    &::-webkit-input-placeholder {
-        @content;
-    }
-}
-
-@mixin font-smoothing($value: on) {
-    @if $value==on {
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-    }
-    @else {
-        -webkit-font-smoothing: subpixel-antialiased;
-        -moz-osx-font-smoothing: auto;
-    }
-}
-
-@mixin linearGradient($top, $bottom) {
-    background: $top;
-    /* Old browsers */
-    background: -moz-linear-gradient(top, $top 0%, $bottom 100%);
-    /* FF3.6+ */
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, $top), color-stop(100%, $bottom));
-    /* Chrome,Safari4+ */
-    background: -webkit-linear-gradient(top, $top 0%, $bottom 100%);
-    /* Chrome10+,Safari5.1+ */
-    background: -o-linear-gradient(top, $top 0%, $bottom 100%);
-    /* Opera 11.10+ */
-    background: -ms-linear-gradient(top, $top 0%, $bottom 100%);
-    /* IE10+ */
-    background: linear-gradient(to bottom, $top 0%, $bottom 100%);
-    /* W3C */
 }
 
 
@@ -176,7 +193,7 @@ sup {
         max-width: 600px !important;
         width: 100%;
         height: auto;
-        font-size: 16px !important;
+        font-size: $table-font-default !important;
     }
     .stack-column {
         display: block !important;

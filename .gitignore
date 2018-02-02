@@ -3,6 +3,7 @@ dist
 src
 images
 node_modules
+jekyll
 .ftppass
 # Packages #
 ############

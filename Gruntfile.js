@@ -1,6 +1,12 @@
 module.exports = function(grunt) {
     var path = require('path');
     var param = grunt.option('target');
+    var baseName;
+    if (param) {
+        baseName = param.replace(/(.*?)\_(.*?)\_(.*?)\_/, "");
+    }
+    var cachedFileNames = [];
+    var demoName = [];
     require('load-grunt-tasks')(grunt);
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
@@ -17,6 +23,8 @@ module.exports = function(grunt) {
             tmp: 'tmp',
             //security vault
             arch: 'archive',
+            //Jekyll Site
+            jekyll: 'jekyll',
             //pattern to HTML email files
             email: '*.html',
             //images to deploy
@@ -28,7 +36,23 @@ module.exports = function(grunt) {
                 overwrite: true, // overwrite matched source files 
                 replacements: [{
                     from: '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
-                    to: '<meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta http-equiv="X-UA-Compatible" content="ie=edge"><link rel="stylesheet" href="css/responsive.css">'
+                    to: '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0"><meta http-equiv="X-UA-Compatible" content="ie=edge">\n<link rel="stylesheet" href="css/responsive.css">'
+                }]
+            },
+            jekyll: {
+                src: ['<%= paths.jekyll %>/*.html'],
+                overwrite: true,
+                replacements: [{
+                    from: '<!DOCTYPE',
+                    to: '---- \nlayout : page\n--- <!DOCTYPE'
+                }]
+            },
+            jekyllhtml: {
+                src: ['<%= paths.jekyll %>/*.html'],
+                overwrite: true,
+                replacements: [{
+                    from: '<html>',
+                    to: '--- \nlayout : page\n---\n<html>'
                 }]
             }
         },
@@ -103,10 +127,17 @@ module.exports = function(grunt) {
                         var mh = d.getMonth() + 1;
                         var dy = d.getDate();
                         var yr = d.getFullYear();
-                        return dest + "/" + yr + "_" + mh + "_" + dy + "_" + src;
+                        var fileName = yr + "_" + mh + "_" + dy + "_" + src;
+                        return dest + "/" + fileName;
                     }
                 }]
 
+            },
+            jekyll: {
+                expand: true,
+                cwd: '<%= paths.dist %>',
+                src: ['<%= paths.email %>'],
+                dest: '<%= paths.jekyll %>',
             },
             sass: {
                 src: 'libraries/scss/lr_responsive_dem.scss',
@@ -128,6 +159,10 @@ module.exports = function(grunt) {
                     if (mh < 10) {
                         mh = '0' + mh;
                     }
+                    var str = src;
+                    var fin = str.replace(/(.*?)\_(.*?)\_(.*?)\_/, "");
+                    var fileName = str.replace(".html", "");
+                    cachedFileNames.push(fileName);
                     return dest + "/" + yr + "_" + mh + "_" + dy + "_" + src;
                 }
             },
@@ -166,7 +201,7 @@ module.exports = function(grunt) {
                     if (mh < 10) {
                         mh = '0' + mh;
                     }
-                    return dest + "/" + yr + "_" + mh + "_" + dy + "_" + src;
+                    return dest + "/" + cachedFileNames[0] + "/" + yr + "_" + mh + "_" + dy + "_" + src;
                 }
             },
             return: {
@@ -193,7 +228,7 @@ module.exports = function(grunt) {
             },
             return_css: {
                 expand: true,
-                cwd: '<%= paths.arch %>/css',
+                cwd: '<%= paths.arch %>/css/' + baseName,
                 src: '**',
                 dest: '<%= paths.src %>/css/',
                 rename: function(dest, src) {
@@ -245,7 +280,7 @@ module.exports = function(grunt) {
             demo: {
                 options: {
                     verbose: true,
-                    removeClasses: true,
+                    removeClasses: false,
 
                 },
                 files: [{
@@ -264,7 +299,9 @@ module.exports = function(grunt) {
                         if (mh < 10) {
                             mh = '0' + mh;
                         }
-                        return dest + "/" + yr + "_" + mh + "_" + dy + "_" + src;
+                        var fileName = yr + "_" + mh + "_" + dy + "_" + src;
+                        demoName.push(fileName);
+                        return dest + "/" + fileName;
                     }
                 }]
             },
@@ -272,7 +309,7 @@ module.exports = function(grunt) {
                 options: {
                     queryString: 'utm_source=infodent&utm_medium=email',
                     verbose: true,
-                    removeClasses: true,
+                    removeClasses: false,
                     removeComments: true,
                     removeIds: true
 
@@ -307,6 +344,25 @@ module.exports = function(grunt) {
             dist: ["<%= paths.dist %>/**"],
             src: ["<%= paths.src %>/*"],
             demo: ["<%= paths.src %>/demo/**"]
+        },
+        screenshot: {
+            default_options: {
+                options: {
+                    path: '<%= paths.arch %>',
+                    files:
+                    // local config options 
+                    {
+                        type: 'local',
+                        path: '<%= paths.dist %>', // path to directory of the webpage 
+                        port: 8000, // port of startup http server 
+                        src: cachedFileNames[0],
+                        dest: cachedFileNames[0] + '.jpg',
+                        delay: 3000
+                    },
+
+                    viewport: ['640x960'] // any (X)x(Y) size 
+                }
+            }
         },
         filerev: {
             options: {
@@ -366,12 +422,17 @@ module.exports = function(grunt) {
         }
     });
     grunt.registerTask('default', 'default task description', function() {
-        console.log("Hello World!");
+        console.log(baseName);
     });
     grunt.registerTask('serve', [
         'connect:app',
         'watch'
     ]);
+    grunt.registerTask('demourl', function() {
+        demoName.forEach(function(element) {
+            grunt.log.writeln('http://test.bec.it/newsletter/000-grunt/demo/' + element);
+        });
+    });
     grunt.registerTask('start', [
         'copy:sass',
         'compass:src',
@@ -383,13 +444,19 @@ module.exports = function(grunt) {
         'clean:demo',
         'premailer:demo',
         'ftp-deploy:demo',
-        'ftp-deploy:demo_img'
+        'ftp-deploy:demo_img',
+        'demourl'
     ]);
     grunt.registerTask('return', [
         'clean:src',
         'copy:return',
         'copy:return_img',
         'copy:return_css'
+    ]);
+    grunt.registerTask('archive', [
+        'copy:archive',
+        'copy:archive_img',
+        'copy:archive_css',
     ]);
     grunt.registerTask('build', [
         'useminPrepare',
@@ -410,8 +477,9 @@ module.exports = function(grunt) {
         'copy:imgDeploy',
         'ftp-deploy:dist',
         'ftp-deploy:img',
+        'copy:jekyll',
         'clean:tmp',
-        'clean:src'
+        'clean:src',
     ]);
 };
 
