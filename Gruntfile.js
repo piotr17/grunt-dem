@@ -353,10 +353,10 @@ module.exports = function(grunt) {
                     // local config options 
                     {
                         type: 'local',
-                        path: '<%= paths.dist %>', // path to directory of the webpage 
+                        path: '<%= paths.src %>', // path to directory of the webpage 
                         port: 8000, // port of startup http server 
-                        src: cachedFileNames[0],
-                        dest: cachedFileNames[0] + '.jpg',
+                        src: '2018_2_7_idea.html',
+                        dest: 'cachedFileNames[0]' + '.jpg',
                         delay: 3000
                     },
 
