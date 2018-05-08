@@ -80,6 +80,17 @@ Author : Luca Ricci
     /* W3C */
 }
 
+
+/* Resets */
+
+.border-reset {
+    border: 0;
+    padding: 0;
+}
+
+
+/* Variables */
+
 body {
     @include font-smoothing(on)
 }
@@ -115,18 +126,37 @@ a {
 }
 
 
+/* Colors */
+
+.color-1 {
+    color: $color-1
+}
+
+.color-2 {
+    color: $color-2
+}
+
+.bg-color-1 {
+    background-color: $bg-color-1
+}
+
+.bg-color-2 {
+    background-color: $bg-color-2
+}
+
+
 /* Typography */
 
 .size-1 {
-    font-size: $table-font-default*2.5;
+    font-size: $table-font-default*1.8;
 }
 
 .size-2 {
-    font-size: $table-font-default*2.0;
+    font-size: $table-font-default*1.5;
 }
 
 .size-3 {
-    font-size: $table-font-default*1.5;
+    font-size: $table-font-default*1.3;
 }
 
 .size-4 {
