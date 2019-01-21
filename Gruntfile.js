@@ -376,43 +376,64 @@ module.exports = function(grunt) {
         useminPrepare: {
             html: '<%= paths.tmp %>/*.html',
         },
-        'ftp-deploy': {
-            img: {
-                auth: {
-                    host: 'gemini3.bec.it',
+        ftp_push: {
+            demo: {
+                options: {
+                    authKey: "key1",
+                    host: "test.bec.it",
+                    dest: "/web/newsletter/000-grunt/demo",
                     port: 21,
-                    authKey: 'key1'
+                    incrementalUpdates: true
                 },
-                src: '<%= paths.tmp %>/images',
-                dest: '/web/newsletter/000-grunt/images'
+                files: [{
+                    expand: true,
+                    cwd: '<%= paths.src %>/demo/',
+                    src: "**"
+                }]
+            },
+            demoImg: {
+                options: {
+                    authKey: "key1",
+                    host: "test.bec.it",
+                    dest: "/web/newsletter/000-grunt/demo/images",
+                    port: 21,
+                    incrementalUpdates: true
+                },
+                files: [{
+                    expand: true,
+                    cwd: '<%= paths.src %>/images/',
+                    src: '**'
+                }]
+            },
+            img: {
+                options: {
+                    authKey: "key1",
+                    host: "test.bec.it",
+                    dest: "/web/newsletter/000-grunt/images",
+                    port: 21,
+                    incrementalUpdates: true
+                },
+                files: [{
+                    expand: true,
+                    cwd: '<%= paths.tmp %>/images',
+                    src: "**"
+                }]
             },
             dist: {
-                auth: {
-                    host: 'gemini3.bec.it',
+                options: {
+                    authKey: "key1",
+                    host: "test.bec.it",
+                    dest: "/web/newsletter/000-grunt/",
                     port: 21,
-                    authKey: 'key1'
+                    incrementalUpdates: true
                 },
-                src: '<%= paths.dist %>',
-                dest: '/web/newsletter/000-grunt'
-            },
-            demo: {
-                auth: {
-                    host: 'gemini3.bec.it',
-                    port: 21,
-                    authKey: 'key1'
-                },
-                src: '<%= paths.src %>/demo/',
-                dest: '/web/newsletter/000-grunt/demo'
-            },
-            demo_img: {
-                auth: {
-                    host: 'gemini3.bec.it',
-                    port: 21,
-                    authKey: 'key1'
-                },
-                src: '<%= paths.src %>/images',
-                dest: '/web/newsletter/000-grunt/demo/images/'
+                files: [{
+                    expand: true,
+                    cwd: '<%= paths.dist %>',
+                    src: "**"
+                }]
             }
+
         },
         usemin: {
             html: '<%= paths.tmp %>/*.html',
@@ -443,8 +464,8 @@ module.exports = function(grunt) {
     grunt.registerTask('demo', [
         'clean:demo',
         'premailer:demo',
-        'ftp-deploy:demo',
-        'ftp-deploy:demo_img',
+        'ftp_push:demo',
+        'ftp_push:demoImg',
         'demourl'
     ]);
     grunt.registerTask('return', [
@@ -475,8 +496,8 @@ module.exports = function(grunt) {
         'htmlmin:tmp',
         'copy:dist',
         'copy:imgDeploy',
-        'ftp-deploy:dist',
-        'ftp-deploy:img',
+        'ftp_push:dist',
+        'ftp_push:img',
         'copy:jekyll',
         'clean:tmp',
         'clean:src',

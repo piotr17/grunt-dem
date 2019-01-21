@@ -5,6 +5,7 @@ images
 node_modules
 jekyll
 .ftppass
+.ftpauth
 .sass-cache
 # Packages #
 ############
