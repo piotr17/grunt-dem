@@ -37,6 +37,9 @@ module.exports = function(grunt) {
                 replacements: [{
                     from: '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">',
                     to: '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0"><meta http-equiv="X-UA-Compatible" content="ie=edge">\n<link rel="stylesheet" href="css/responsive.css">'
+                }, {
+                    from: '<html>',
+                    to: '<!DOCTYPE html>\n<!-- This comment line needed for bootstrap to work on mobile devices -->\n<html>'
                 }]
             },
             jekyll: {
@@ -510,6 +513,6 @@ MANUAL
 grunt start to bootstrap the email
 grunt serve to start the livereload server
 grunt demo to deploy a demo file via FTP
-grunt return -target=clientname to return an email from archive
+grunt return -target=filename without .html to return an email from archive
 grunt build to create the final code, archive the email and clean src 
 */

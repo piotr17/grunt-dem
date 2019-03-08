@@ -261,6 +261,9 @@ sup {
 /* Media Queries */
 
 @media only screen and (max-width: 480px) {
+    .d-none {
+        display: none!important;
+    }
     table {
         max-width: 600px !important;
         width: 100%;
