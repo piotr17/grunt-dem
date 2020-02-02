@@ -399,7 +399,7 @@ module.exports = function (grunt) {
             },
             demoImg: {
                 options: {
-                    authKey: "key1",
+                    authKey: "key1", //credentials for login
                     host: baseUrl,
                     dest: "/newsletter/000-grunt/demo/images",
                     port: 21,
