@@ -1,7 +1,10 @@
-module.exports = function(grunt) {
+module.exports = function (grunt) {
     var path = require('path');
     var param = grunt.option('target');
+    var cdnUrl = ''
+    var utmSource = ''
     var baseName;
+    var baseUrl = '' // Example google.it
     if (param) {
         baseName = param.replace(/(.*?)\_(.*?)\_(.*?)\_/, "");
     }
@@ -125,7 +128,7 @@ module.exports = function(grunt) {
                     cwd: '<%= paths.tmp %>/output/',
                     src: ['<%= paths.email %>'],
                     dest: '<%= paths.dist %>',
-                    rename: function(dest, src) {
+                    rename: function (dest, src) {
                         var d = new Date();
                         var mh = d.getMonth() + 1;
                         var dy = d.getDate();
@@ -151,7 +154,7 @@ module.exports = function(grunt) {
                 cwd: '<%= paths.src %>',
                 src: ['<%= paths.email %>'],
                 dest: '<%= paths.arch %>/',
-                rename: function(dest, src) {
+                rename: function (dest, src) {
                     var d = new Date();
                     var mh = d.getMonth() + 1;
                     var dy = d.getDate();
@@ -174,7 +177,7 @@ module.exports = function(grunt) {
                 cwd: '<%= paths.src %>/images',
                 src: ['**'],
                 dest: '<%= paths.arch %>/img',
-                rename: function(dest, src) {
+                rename: function (dest, src) {
                     var d = new Date();
                     var mh = d.getMonth() + 1;
                     var dy = d.getDate();
@@ -193,7 +196,7 @@ module.exports = function(grunt) {
                 cwd: '<%= paths.src %>/css',
                 src: ['**'],
                 dest: '<%= paths.arch %>/css',
-                rename: function(dest, src) {
+                rename: function (dest, src) {
                     var d = new Date();
                     var mh = d.getMonth() + 1;
                     var dy = d.getDate();
@@ -212,7 +215,7 @@ module.exports = function(grunt) {
                 cwd: '<%= paths.arch %>/',
                 src: '*' + param + '.html',
                 dest: '<%= paths.src %>/',
-                rename: function(dest, src) {
+                rename: function (dest, src) {
                     var str = src;
                     var fin = str.replace(/(.*?)\_(.*?)\_(.*?)\_/, "");
                     return dest + fin;
@@ -223,7 +226,7 @@ module.exports = function(grunt) {
                 cwd: '<%= paths.arch %>/img',
                 src: param + '**',
                 dest: '<%= paths.src %>/images/',
-                rename: function(dest, src) {
+                rename: function (dest, src) {
                     var str = src;
                     var fin = str.replace(/(.*?)\_(.*?)\_(.*?)\_/, "");
                     return dest + fin;
@@ -234,7 +237,7 @@ module.exports = function(grunt) {
                 cwd: '<%= paths.arch %>/css/' + baseName,
                 src: '**',
                 dest: '<%= paths.src %>/css/',
-                rename: function(dest, src) {
+                rename: function (dest, src) {
                     var str = src;
                     var fin = str.replace(/(.*?)\_(.*?)\_(.*?)\_/, "");
                     return dest + fin;
@@ -262,7 +265,7 @@ module.exports = function(grunt) {
         cdn: {
             options: {
                 /** @required - root URL of your CDN (may contains sub-paths as shown below) */
-                cdn: 'http://test.bec.it/newsletter/000-grunt/',
+                cdn: cdnUrl,
                 /** @optional  - if provided both absolute and relative paths will be converted */
                 flatten: true,
                 /** @optional  - if provided will be added to the default supporting types */
@@ -291,7 +294,7 @@ module.exports = function(grunt) {
                     cwd: '<%= paths.src %>/',
                     src: ['*.html'],
                     dest: '<%= paths.src %>/demo/',
-                    rename: function(dest, src) {
+                    rename: function (dest, src) {
                         var d = new Date();
                         var mh = d.getMonth() + 1;
                         var dy = d.getDate();
@@ -310,7 +313,7 @@ module.exports = function(grunt) {
             },
             dist: {
                 options: {
-                    queryString: 'utm_source=infodent&utm_medium=email',
+                    queryString: 'utm_source=' + utmSource + '&utm_medium=email',
                     verbose: true,
                     removeClasses: false,
                     removeComments: true,
@@ -326,7 +329,7 @@ module.exports = function(grunt) {
             },
             src: {
                 options: {
-                    queryString: 'utm_source=infodent&utm_medium=email',
+                    queryString: 'utm_source=' + utmSource + '&utm_medium=email',
                     verbose: true,
                     removeClasses: true,
                     removeComments: true,
@@ -383,7 +386,7 @@ module.exports = function(grunt) {
             demo: {
                 options: {
                     authKey: "key1",
-                    host: "test.bec.it",
+                    host: baseUrl,
                     dest: "/web/newsletter/000-grunt/demo",
                     port: 21,
                     incrementalUpdates: true
@@ -397,8 +400,8 @@ module.exports = function(grunt) {
             demoImg: {
                 options: {
                     authKey: "key1",
-                    host: "test.bec.it",
-                    dest: "/web/newsletter/000-grunt/demo/images",
+                    host: baseUrl,
+                    dest: "/newsletter/000-grunt/demo/images",
                     port: 21,
                     incrementalUpdates: true
                 },
@@ -411,7 +414,7 @@ module.exports = function(grunt) {
             img: {
                 options: {
                     authKey: "key1",
-                    host: "test.bec.it",
+                    host: baseUrl,
                     dest: "/web/newsletter/000-grunt/images",
                     port: 21,
                     incrementalUpdates: true
@@ -425,7 +428,7 @@ module.exports = function(grunt) {
             dist: {
                 options: {
                     authKey: "key1",
-                    host: "test.bec.it",
+                    host: baseUrl,
                     dest: "/web/newsletter/000-grunt/",
                     port: 21,
                     incrementalUpdates: true
@@ -445,15 +448,15 @@ module.exports = function(grunt) {
             }
         }
     });
-    grunt.registerTask('default', 'default task description', function() {
+    grunt.registerTask('default', 'default task description', function () {
         console.log(baseName);
     });
     grunt.registerTask('serve', [
         'connect:app',
         'watch'
     ]);
-    grunt.registerTask('demourl', function() {
-        demoName.forEach(function(element) {
+    grunt.registerTask('demourl', function () {
+        demoName.forEach(function (element) {
             grunt.log.writeln('http://test.bec.it/newsletter/000-grunt/demo/' + element);
         });
     });
