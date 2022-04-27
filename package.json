@@ -13,7 +13,7 @@
     "license": "ISC",
     "devDependencies": {
         "connect-livereload": "^0.6.1",
-        "grunt": "^1.0.3",
+        "grunt": "^1.5.2",
         "grunt-cdn": "^0.6.5",
         "grunt-concurrent": "^2.3.1",
         "grunt-contrib-clean": "^1.0.0",
